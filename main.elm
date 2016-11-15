@@ -1,6 +1,7 @@
 module SPA exposing (..)
 
 import Html exposing (..)
+import Html.Events exposing (onClick)
 
 
 main =
@@ -12,13 +13,20 @@ main =
         }
 
 
+type Page
+    = Home
+    | Login
+    | About
+
+
 type alias Model =
-    {}
+    { currentPage : Page
+    }
 
 
 init : ( Model, Cmd Msg )
 init =
-    ( Model, Cmd.none )
+    ( Model Home, Cmd.none )
 
 
 
@@ -26,14 +34,22 @@ init =
 
 
 type Msg
-    = Noop
+    = GoHome
+    | GoLogin
+    | GoAbout
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        Noop ->
-            ( model, Cmd.none )
+        GoHome ->
+            ( { model | currentPage = Home }, Cmd.none )
+
+        GoLogin ->
+            ( { model | currentPage = Login }, Cmd.none )
+
+        GoAbout ->
+            ( { model | currentPage = About }, Cmd.none )
 
 
 
@@ -43,8 +59,36 @@ update msg model =
 view : Model -> Html Msg
 view model =
     div []
-        [ text "Hello world!"
+        [ h1 [] [ text "SPA application" ]
+        , render_menu model
+        , render_page model
         ]
+
+
+render_menu : Model -> Html Msg
+render_menu model =
+    div []
+        [ button [ onClick GoHome ] [ text "Home" ]
+        , button [ onClick GoLogin ] [ text "Login" ]
+        , button [ onClick GoAbout ] [ text "About" ]
+        ]
+
+
+render_page : Model -> Html Msg
+render_page model =
+    let
+        page_content =
+            case model.currentPage of
+                Home ->
+                    text "Home"
+
+                Login ->
+                    text "Login"
+
+                About ->
+                    text "About"
+    in
+        div [] [ page_content ]
 
 
 

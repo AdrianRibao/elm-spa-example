@@ -10,3 +10,4 @@ Run with elm-reactor and go to `http://localhost:8000`
 ## Processs
 
 - [X] Create a basic app
+- [X] Create a basic navigation

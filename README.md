@@ -9,4 +9,4 @@ Run with elm-reactor and go to `http://localhost:8000`
 
 ## Processs
 
-- [X] Create a basic app
+- [X] **Step 0**: Create a basic app - https://github.com/AdrianRibao/elm-spa-example/tree/step0

@@ -2,15 +2,40 @@ module SPA exposing (..)
 
 import Html exposing (..)
 import Html.Events exposing (onClick)
+import Navigation exposing (..)
 
 
 main =
-    Html.program
+    Navigation.program locFor
         { init = init
-        , view = view
         , update = update
+        , view = view
         , subscriptions = subscriptions
         }
+
+
+
+-- ROUTING
+
+
+locFor : Location -> Msg
+locFor location =
+    case location.hash of
+        "#home" ->
+            GoHome
+
+        "#login" ->
+            GoLogin
+
+        "#about" ->
+            GoAbout
+
+        _ ->
+            GoHome
+
+
+
+-- MODEL
 
 
 type Page
@@ -24,9 +49,24 @@ type alias Model =
     }
 
 
-init : ( Model, Cmd Msg )
-init =
-    ( Model Home, Cmd.none )
+init : Location -> ( Model, Cmd Msg )
+init location =
+    let
+        page =
+            case location.hash of
+                "#home" ->
+                    Home
+
+                "#login" ->
+                    Login
+
+                "#about" ->
+                    About
+
+                _ ->
+                    Home
+    in
+        ( Model page, Cmd.none )
 
 
 
@@ -37,6 +77,7 @@ type Msg
     = GoHome
     | GoLogin
     | GoAbout
+    | LinkTo String
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -50,6 +91,9 @@ update msg model =
 
         GoAbout ->
             ( { model | currentPage = About }, Cmd.none )
+
+        LinkTo path ->
+            ( model, newUrl path )
 
 
 
@@ -68,9 +112,9 @@ view model =
 render_menu : Model -> Html Msg
 render_menu model =
     div []
-        [ button [ onClick GoHome ] [ text "Home" ]
-        , button [ onClick GoLogin ] [ text "Login" ]
-        , button [ onClick GoAbout ] [ text "About" ]
+        [ button [ onClick (LinkTo "#home") ] [ text "Home" ]
+        , button [ onClick (LinkTo "#login") ] [ text "Login" ]
+        , button [ onClick (LinkTo "#about") ] [ text "About" ]
         ]
 
 

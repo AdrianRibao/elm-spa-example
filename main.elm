@@ -25,6 +25,7 @@ route =
         [ UrlParser.map Home (UrlParser.s "home")
         , UrlParser.map Login (UrlParser.s "login")
         , UrlParser.map About (UrlParser.s "about")
+        , UrlParser.map PostShow (UrlParser.s "post" </> int)
         ]
 
 
@@ -42,6 +43,7 @@ type Page
     = Home
     | Login
     | About
+    | PostShow Int
 
 
 type alias Model =
@@ -106,6 +108,7 @@ render_menu model =
         [ button [ onClick (LinkTo "#home") ] [ text "Home" ]
         , button [ onClick (LinkTo "#login") ] [ text "Login" ]
         , button [ onClick (LinkTo "#about") ] [ text "About" ]
+        , button [ onClick (LinkTo "#post/17") ] [ text "Go to post 17" ]
         ]
 
 
@@ -122,6 +125,9 @@ render_page model =
 
                 About ->
                     text "About"
+
+                PostShow postid ->
+                    text ("Render the post with id: " ++ toString postid)
     in
         div [] [ page_content ]
 

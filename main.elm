@@ -3,6 +3,7 @@ module SPA exposing (..)
 import Html exposing (..)
 import Html.Events exposing (onClick)
 import Navigation exposing (..)
+import UrlParser exposing (..)
 
 
 main =
@@ -18,20 +19,19 @@ main =
 -- ROUTING
 
 
+route : Parser (Page -> a) a
+route =
+    oneOf
+        [ UrlParser.map Home (UrlParser.s "home")
+        , UrlParser.map Login (UrlParser.s "login")
+        , UrlParser.map About (UrlParser.s "about")
+        ]
+
+
 locFor : Location -> Msg
 locFor location =
-    case location.hash of
-        "#home" ->
-            GoHome
-
-        "#login" ->
-            GoLogin
-
-        "#about" ->
-            GoAbout
-
-        _ ->
-            GoHome
+    parseHash route location
+        |> GoTo
 
 
 
@@ -53,18 +53,12 @@ init : Location -> ( Model, Cmd Msg )
 init location =
     let
         page =
-            case location.hash of
-                "#home" ->
+            case parseHash route location of
+                Nothing ->
                     Home
 
-                "#login" ->
-                    Login
-
-                "#about" ->
-                    About
-
-                _ ->
-                    Home
+                Just page ->
+                    page
     in
         ( Model page, Cmd.none )
 
@@ -74,23 +68,20 @@ init location =
 
 
 type Msg
-    = GoHome
-    | GoLogin
-    | GoAbout
+    = GoTo (Maybe Page)
     | LinkTo String
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        GoHome ->
-            ( { model | currentPage = Home }, Cmd.none )
+        GoTo maybepage ->
+            case maybepage of
+                Nothing ->
+                    ( { model | currentPage = Home }, Cmd.none )
 
-        GoLogin ->
-            ( { model | currentPage = Login }, Cmd.none )
-
-        GoAbout ->
-            ( { model | currentPage = About }, Cmd.none )
+                Just page ->
+                    ( { model | currentPage = page }, Cmd.none )
 
         LinkTo path ->
             ( model, newUrl path )
